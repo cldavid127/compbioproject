@@ -1,0 +1,240 @@
+---
+title: "Project 2 -- SDS 348"
+author: "Casey David"
+date: "5/1/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+
+```
+0. The dataset that I have chosen to use for this project is the 'baseball' dataset that is in the 'vcd' package. I chose this dataset because I have spent most of my life hearing my Dad and 2 older brothers talk about baseball; all three of them are able to rattle off random statistics from numerous years and numerous players. I thought this would be an interesting dataset to work with since I understand the game (and I thought it might help me earn some points with my family). 
+In this dataset, there are 25 variables and 322 observations (which all represent a different baseball player). All of the data in this set is statistics and information about these players from the years 1986 and 1987. The variables 'name1' and 'name2' just provide the first and last name of the specific player. Any of the variables that have 'runs' in their name are measuring the number of runs scored by that player in that year. 'Hits' measures the number of hits made by each player, 'atbats' measures the number of times a player has an official appearance at the plate (and doesn't get hit by a pitch or walked by the catcher), 'homer' measures the number of homeruns each player gets, and 'walks' measures the number of times a player gets walked while they are at bat. There is also a variable for salary (sal87) that describes the players' salary for that year in the thousands. There is also a variable to list the players' team ('team'), division ('div86'), and league ('league86', 'league87'). 
+
+```{R}
+class_diag<-function(probs,truth){
+
+tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+
+if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+
+#CALCULATE EXACT AUC
+ord<-order(probs, decreasing=TRUE)
+probs <- probs[ord]; truth <- truth[ord]
+
+TPR=cumsum(truth)/max(1,sum(truth)) 
+FPR=cumsum(!truth)/max(1,sum(!truth))
+
+dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+
+n <- length(TPR)
+auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+data.frame(acc,sens,spec,ppv,auc)
+}
+```
+
+```{R}
+#data loading and prep
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+install.packages("vcd")
+library(vcd)
+
+bballdata <- as.data.frame(Baseball)
+bballdata <-bballdata %>% na.omit()
+```
+
+```{R}
+#MANOVA/ANOVA
+baseball <- bballdata %>% filter(posit86 != "UT")
+baseball <-baseball %>% filter(posit86 != "S3")
+baseball <-baseball %>% filter(posit86 != "O1")
+baseball <-baseball %>% filter(posit86 != "OD")
+baseball <-baseball %>% filter(posit86 != "3S")
+baseball <-baseball %>% filter(posit86 != "OS")
+baseball <-baseball %>% filter(posit86 != "1O")
+baseball <-baseball %>% filter(posit86 != "DO")
+baseball <-baseball %>% filter(posit86 != "2S")
+baseball <-baseball %>% filter(posit86 != "32")
+baseball <-baseball %>% filter(posit86 != "3O")
+baseball <-baseball %>% filter(posit86 != "CD")
+baseball <-baseball %>% filter(posit86 != "23")
+#here i removed a lot of the positions that aren't common (not the usual 9), and therefore do not have the same (or similar) number of players as the others.
+man1 <- manova(cbind(hits86, homer86, walks86, rbi86)~posit86, data= baseball)
+
+summary(man1)
+
+summary.aov(man1)
+baseball %>% group_by(posit86)%>%summarize(mean(hits86), mean(homer86), mean(walks86), mean(rbi86))
+
+## pairwise
+pairwise.t.test(baseball$hits86, baseball$posit86, p.adj= 'none')
+pairwise.t.test(baseball$walks86, baseball$posit86, p.adj = 'none')
+pairwise.t.test(baseball$homer86, baseball$posit86, p.adj = 'none')
+pairwise.t.test(baseball$rbi86, baseball$posit86, p.adj = 'none')
+```
+1. The relationship that I was interested in exploring in this dataset was whether or not there was a relationship between number of hits a player gets vs the position they play in 1986. So, to begin, I ran a MANOVA on this idea but also included walks, homeruns, and rbis from the year 1986. The results from the MANOVA indicated that there was a mean difference across the levels of my 'posit86' categorical variable (p-value very small). From here, since the result was significant, I ran univariate ANOVAS on all four of the numeric variables that I included in the MANOVA. All four of the ANOVAs came back with significant p-values, which indicates that these all show a mean difference across groups. With this result, I moved forward with running pairwise t-tests on all four numeric variables with the categorical 'posit' variable. In total, I ran 1 MANOVA, 4 ANOVAs, and 40 pairwise tests (10 categories in the categorical variable * the 4 numeric variables) which comes out to 45 tests. 
+The probability that I made at least one type I error is 1-.95^45 = 0.900. The Bonferroni correction is 0.5/45 = 0.001111. After this correction, the MANOVA is still significant, and so are all four ANOVAs. From the pairwise tests, I have found that there is a significant difference between Catchers and the general 'OF' (outfield) positions when compared with the other 8 positions. 
+Some of the assumptions for these tests are that this is a random sample and has independent observations. I am not entirely sure if this was a random sample to begin with, but I also made it less random with removing some of the positions in the beginning. There are a lot assumptions on the MANOVAs and they are usually hard to meet/test. 
+
+```{R}
+#Randomization test and plot
+baseball%>%group_by(div86)%>%summarize(m=mean(hits86))%>%summarize(diff(m))
+basesamp <- sample_n(baseball, 50)
+#rand_dist <-vector()
+#for(i in 1:500){
+  #new<- data.frame(hits= sample(baseball$hits86), division = baseball$div86)
+  #rand_dist[i]<- mean(new[new$div86== "A",]$hits86)- mean(new[new$div86 == #"N",]$hits86)
+ # }
+#this just kept giving me NAs, no matter what I tested, and I was too late on working on this to ask for help! The t-test below gives a result, which is what I will be reporting on. 
+t.test(data= baseball, hits86~ div86)
+
+```
+2. The p-value that resulted from the t-test was not significant, so therefore I was not able to reject the null hypothesis, which states that the true difference in means is equal to 0. The mean hits for each division are very close in range, and therefore do not indicate a significant difference. The alternate hypothesis for this test would have been that the true difference in means is not equal to 0, which would have meant that there was a significant difference in the mean number of hits between the two divisions. 
+```{R}
+#linear regression model 
+#don't forget to mean-center numeric variables
+baseball$homer86_c <- baseball$homer86 - mean(baseball$homer86) 
+baseball$hits_c <- baseball$hits - mean(baseball$hits)
+baseball$atbat86_c <- baseball$atbat86 - mean(baseball$atbat86)
+fit1 <- lm(homer86_c~ hits_c * league86 * atbat86_c, data = baseball)
+summary(fit1)
+ggplot(baseball, aes(x= hits, y=homer86, group=league86)) + geom_point(aes(color=league86)) + geom_smooth(method = "lm", formula = y~1, se=F, fullrange=T, aes(color=league86))
+resids <-lm(homer86_c~ hits_c * league86 * atbat86_c, data = baseball)$residuals
+fitted <-lm(homer86_c~ hits_c * league86 * atbat86_c, data = baseball)$fitted.values
+ggplot()+geom_point(aes(resids, fitted))
+ggplot()+geom_histogram(aes(resids), bins = 20)
+ggplot()+geom_point(aes(fitted,resids))+geom_hline(yintercept=0, color='red')
+ks.test(resids, "pnorm", mean= 0, sd(resids))
+shapiro.test(resids)
+(sum((baseball$homer86 - mean(baseball$homer86))^2) -sum(fit1$residuals^2))/sum((baseball$homer86-mean(baseball$homer86))^2)
+library(sandwich)
+library(lmtest)
+bptest(fit1)
+summary(fit1)$coef
+coeftest(fit1, vcov = vcovHC(fit1))
+```
+
+3. The coefficient for the intercept (going to refer to it as y) is 1.4, which is the result of holding everything else at 0. (I believe the intercept is homeruns examined under league86A (American League). This is not necessarily a meaningful interpretation, as the other variables are not likely to be near 0. There is a very small increase in y (0.00189) for every one unit increase in hits, while also holding everything else constant. There is a decrease by 3.089 in y for the National league vs the American league. There is a 0.0349 increase in y for every 1 unit increase in atbats, holding everything else constant. The coefficients for all of the interactions are very small 0 numbers. 
+The assumptions of linearity, normality, and homoskedasticity were checked graphically and also with a hypothesis test, and passed. I failed to reject the null that true distribution is normal, so the normality of my test is fine!
+There was a very slight decrease in the standard error when computed with the robust standard error method. 
+ The proportion of variation in the outcome that my model explains is 0.345. 
+```{R}
+#same model with bootstrapped standard errors 
+
+samp_distn <- replicate(5000, {
+  boot_dat <-sample_frac(baseball, replace = T)
+  fit2 <-lm(homer86_c~ hits_c * league86 * atbat86_c, data = boot_dat)
+  coef(fit2)
+})
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+
+```
+When calculated using the bootstrap method, the standard errors for this model are even slightly smaller than the robust standard errors calculated up above. Since the standard errors are getting slightly smaller, the p-values will be getting slightly bigger. 
+```{R}
+
+basedata <- baseball %>% mutate(division = ifelse(div86 == "W", 1,0))
+fit2 <- glm(division~years+ hits + rbi+ sal87, data= basedata, family = binomial(link = "logit"))
+coeftest(fit2)
+exp(coef(fit2))
+prob <-predict(fit2, type = "response")
+pred<- ifelse(prob>.5,1,0)
+table(prediction= pred, truth =basedata$division)%>% addmargins
+#accuracy 
+(53+85)/234
+#tpr
+85/120
+#PPV
+53/88
+#tnr
+53/114
+basedata$logit<-predict(fit2) 
+ggplot(basedata,aes(logit, fill=div86))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)
+library(plotROC)
+ROCplot <- ggplot(basedata)+ geom_roc(aes(d= division, m=prob), n.cuts = 0) 
+ROCplot
+calc_auc(ROCplot)
+
+set.seed(1234) 
+k=10
+
+data1 <-basedata[sample(nrow(basedata)),]
+folds<-cut(seq(1:nrow(basedata)),breaks=k,labels=F)
+
+diags <-NULL 
+for(i in 1:k){
+  train<-data1[folds!=i,] 
+  test <-data1[folds==i,] 
+  truth <- test$division
+  fit3 <-glm(division~ years+ hits + rbi+ sal87, data = train, family = "binomial")
+  probs <- predict(fit3, newdata = test, type = "response")
+  diags <-rbind(diags, class_diag(probs, truth)) 
+}
+summarize_all(diags, mean)
+
+```
+
+5. When all the other variables are held at 0, the odds of being in the western division are 1.89 (intercept coefficient). When looking at a player for the number of years that they've played, the odds of them being in the Western division are 0.97. 
+
+The accuracy was calculated as 0.59, the sensitivity (tpr) is 0.71, the PPV is 0.60, and the specificity (tnr) is 0.46. This model only has a 59% accuracy, which is not the best. It has a higher true positive rate than its true negative rate, which is interesting. The AUC for this model was 0.57, which is classified as Bad! This means that the ROC plot is also not great and that there is not a good trade-off between sensitivity and specificity. The accuracy, sensitivity and recall are reported in the last line resulting from the summarize_all(diags, mean) code. 
+```{R}
+#perform LASSO
+newdat <- basedata %>% select(-name1, -name2, -team86, -team87)
+newdat <- newdat%>% mutate(bb = ifelse(league86 == "N", 1,0))
+head(newdat)
+
+library(glmnet)
+set.seed(1234)
+y <- as.matrix(newdat$hits86)
+x <- model.matrix(hits86~., data= newdat)[,-1]
+cv.lasso1<-cv.glmnet(x=x[,-1],y=y[,1],family="poisson")
+lasso1<-glmnet(x,y,family="poisson",alpha=1,lambda=cv.lasso1$lambda.1se)
+coef(lasso1)
+
+
+set.seed(1234) 
+k=10
+
+data2 <-newdat[sample(nrow(newdat)),]
+folds<-cut(seq(1:nrow(newdat)),breaks=k,labels=F)
+
+diags <-NULL 
+for(i in 1:k){
+  train<-data2[folds!=i,] 
+  test <-data2[folds==i,] 
+  truth <- test$hits86
+  fit4 <-glm(hits86~ atbat86+league86, data = train, family = "poisson")
+  probs <- predict(fit4, newdata = test, type = "response")
+  diags <-rbind(diags, class_diag(probs, truth)) 
+}
+summarize_all(diags, mean)
+```
+6. The only variable that are retained from this lasso on the statistics on hits from the year 1986 is the atbat86 variable and the intercept, which I believe is the American league. The AUC comes out to being 1 and the PPV is 0.0427, which are confusing results to me. But as the game works, the more at bats a player has, the more chances he has to get more hits, so the connection between the two makes sense, but I don't think it should be giving that high of an AUC. 
+

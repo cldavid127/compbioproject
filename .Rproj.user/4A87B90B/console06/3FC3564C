@@ -1,0 +1,16 @@
+]0;/stor/home/cld2922/projectwebsite_3]0;cld2922@educcomp03: ~/projectwebsite_3[01;32mcld2922@educcomp03[00m:[01;34m~/projectwebsite_3[00m$ [K]0;cld2922@educcomp03: ~/projectwebsite_3[01;32mcld2922@educcomp03[00m:[01;34m~/projectwebsite_3[00m$ ls
+ config.toml  'national parks project .Rmd'   [0m[01;34mpublic[0m
+ [01;34mcontent[0m      'project 2.Rmd'                 [01;34mstatic[0m
+ index.Rmd     projectwebsite_3.Rproj         [01;34mthemes[0m
+]0;/stor/home/cld2922/projectwebsite_3]0;cld2922@educcomp03: ~/projectwebsite_3[01;32mcld2922@educcomp03[00m:[01;34m~/projectwebsite_3[00m$ git -- version
+unknown option: --
+usage: git [--version] [--help] [-C <path>] [-c <name>=<value>]
+           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+           [-p | --paginate | --no-pager] [--no-replace-objects] [--bare]
+           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+           <command> [<args>]
+]0;/stor/home/cld2922/projectwebsite_3]0;cld2922@educcomp03: ~/projectwebsite_3[01;32mcld2922@educcomp03[00m:[01;34m~/projectwebsite_3[00m$ git --version
+git version 2.17.1
+]0;/stor/home/cld2922/projectwebsite_3]0;cld2922@educcomp03: ~/projectwebsite_3[01;32mcld2922@educcomp03[00m:[01;34m~/projectwebsite_3[00m$ cd ~/[K[K[K[K[Kgit init
+Initialized empty Git repository in /stor/home/cld2922/projectwebsite_3/.git/
+]0;/stor/home/cld2922/projectwebsite_3]0;cld2922@educcomp03: ~/projectwebsite_3[01;32mcld2922@educcomp03[00m:[01;34m~/projectwebsite_3[00m$ git add . 

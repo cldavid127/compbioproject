@@ -1,0 +1,148 @@
+---
+title: "National Parks Project"
+author: "Casey David, cld2922"
+date: "3/12/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+``````{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = "center", warning = F, message = F,
+tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
+```
+
+0. Introduction
+
+  The two datasets I have chosen for this project are both about the U.S. National Parks. One of them (named 'parks' in this project) I retrieved from Kaggle.com. It lists the names and codes of all the state parks (Park.Name and Park.Code respectively), the state each park is in (State), the acreage of each park (Acres), and the lattitude/longitude of each park. The other dataset I chose (natparks) came from the U.S. National Parks database and it was a report that I was able to generate and pick/choose what I wanted to work with. This dataset also has the names of each of the parks and the codes (Park.Name, UnitCode) and the state and region each park is located in (State, Region). The natparks dataset also includes data on each of the months (Month) for three years (Year - looks at 2015, 2016, & 2017) for the number of visitors (Recreation Visits & NonRecreation Visits) and the number of campers (TentCampers, RvCampers). 
+  
+  I chose to do my project on these datasets because I have loved the National Parks since I was little and I grew up near White Sands (before it was a national park), Big Bend, and Carlsbad Caverns. I have been dreaming about doing a roadtrip post-grad and seeing how as many parks as I could & possibly camping in them. This project is interesting to me (and helpful) because I will be able to examine which parks are popular during which months of the year. I imagine I will find a correlation of higher visitation rates during the summer months. 
+
+
+
+```{R}
+#Data loading and Prep
+library(readr)
+library(dplyr)
+#install.packages("ggplot2")
+library(ggplot2)
+
+parks<-read.csv("~/Downloads/parks.csv")
+natparks <- read.csv("~/Downloads/natparksdata.csv")
+library(tidyverse)
+library(tidyr)
+glimpse(natparks)
+glimpse(parks)
+```
+
+```{R}
+#Joining/merging
+natparks <- natparks %>% rename("RVcampers" = "X") %>% rename("Park.Code"= "UnitCode")
+natparks <- natparks %>% mutate(Month = recode(Month, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+join1 <- natparks%>% inner_join(parks)
+join1  %>% summarize(n_distinct(.))
+2053- 757
+56-22
+```
+Since both of my datasets included the full names of the National Parks, I decided to do an inner_join to merge the two data sets by only the parks they had in common. The natparks dataset contained some other parks/monuments that weren't in the original parks dataset. The natparks dataset lost 1296 rows of observations and the parks dataset lost 34 rows. I believe this happened because there were some slight differences in the way the names of the National Parks had been written in (maybe spacing or wording) and also there were some that just did not match up. I attempted a left_join of parks by natparks but that gave me messier data, and the same thing happened on a full join. The loss of so many rows causes some trouble because I won't be able to look at all parks across the US or even all of the ones in each state.
+
+
+
+```{R}
+#Cleaning! 
+join1$Acres <- as.numeric(join1$Acres)
+join1$RecreationVisits <- as.numeric(join1$RecreationVisits)
+join1$NonRecreationVisits <- as.numeric(join1$NonRecreationVisits)
+join1$RVcampers <- as.numeric(join1$RVcampers)
+join1$TentCampers <- as.numeric(join1$TentCampers)
+join1$Year <- as.numeric(join1$Year)
+join1$Month <- as.factor(join1$Month)
+```
+
+
+```{R}
+#Wrangling Section! Yee Haw! 
+glimpse(join1)
+
+join1 %>% summarize_if(is.numeric, mean, na.rm=T)
+join1 %>% summarize_if(is.character, n_distinct)
+join1 %>% filter(Month == "Jul") %>% summarize(mean(RecreationVisits))
+join1 <- as.data.frame(join1)
+
+join1 %>% group_by(State, Region) %>% arrange(desc(Acres))
+
+join1 %>% na.omit() %>% summarize(mean_visit = mean(RecreationVisits), sd_visit = sd(RecreationVisits), quantile_visit = quantile(RecreationVisits, .90), min_visit= min(RecreationVisits), max_visit= max(RecreationVisits), cor_visit= cor(Year, RecreationVisits))
+
+join1%>% group_by(Park.Name, State) %>% summarize(mean_visit = mean(RecreationVisits), sd_visit = sd(RecreationVisits), quantile_visit = quantile(RecreationVisits, .90), min_visit= min(RecreationVisits), max_visit= max(RecreationVisits), cor_visit= cor(Year, RecreationVisits), var_visit = var(RecreationVisits)) %>% na.omit 
+```
+
+
+
+```{R}
+#More Wrangling!
+join1 <-join1 %>% mutate(TotalVisitors = RecreationVisits + NonRecreationVisits + RVcampers)
+join1 <-join1 %>% mutate(TotalCamp = TentCampers + RVcampers) %>% arrange(desc(TotalCamp))
+head(join1)
+
+``` 
+
+All six of the dyplr functions required for this project were used on my data to assist in the exploration of the dataset, "join1" and in the calculation of summary statistics. For my summary statistics, I calculated the mean, max, min, sd, quantile, cor, and var for the variable RecreationVisits, which presents the number of people that visited each park in each month for that year. Then I grouped my data by state and by park in order to examine these numbers by each park. Kobuk Valley National Park had the lowest overall mean of Recreation visits, which makes sense, since its all the way in Alaska. Dry Tortugas National Park had the highest average overall Recreation visitors, which also makes sense as it is on the coast in Florida. The National Park with the largest acreage is the Kobuk Valley National Park in Alaska, which is understandable, as its in the Largest state in the US, but it is interesting that the park with the largest acreage has the smallest average Recreation visits overall. Yosemite had the highest total number of campers overall in the month of March in 2016. 
+
+
+```{R}
+#Visualizing!
+#install.packages("reshape2")
+library(reshape2)
+parkcor <- join1 %>% na.omit %>% select_if(is.numeric)
+cor(parkcor)
+
+campingcor <- select(join1, Acres, Year, RecreationVisits, TentCampers) %>% cor(.) %>% as.data.frame
+
+campingcor %>% rownames_to_column %>% pivot_longer(-1) %>% ggplot(aes(rowname, name, fill= value)) +geom_tile() + geom_text(aes(label = round(value, 2))) + xlab('') + ylab ('') + ggtitle("Correlation Heatmap of Join1 variables")
+```
+
+The first section of my data visualization features a correlation heatmap of my dataset, "join1", which resulted from the joining of the natparks dataset and the parks dataset. This heatmap shows that there is very little correlation between the numeric variables that I chose to examine, which were the Acreage of each park, the number of Recreation visitors to each park (per month, per year), Tent campers in each park (per month, per year) and the year. The largest correlation visible is between Tent Campers and Recreation Visitors at 0.07. There is a small correlation (0.04) between Year and number of Recreation Visitors, and a slightly smaller correlation (0.03) between year and Tent campers. 
+```{R}
+#More Visualizing! 
+ggplot(join1, aes(x=Month, fill = Month)) + geom_bar(aes(y= TentCampers), stat= "summary", fun.y = "mean") + ggtitle("Average Number of Tent Campers per Month") + ylab("Number of Tent Campers")
+```
+I wanted to create/look at this plot in order to determine which of the 12 were the busiest months for camping the National Parks on average. I had an idea already that the summer months (May, June and July) would have larger numbers than the winter months (December, January and February). This hypothesis (common knowledge?) was demonstrated as being true from the plot generated on data from the years 2015-2017. I assumed this would be the case due to the temperatures/weather that occur during the winter months. 
+```{R}
+ggplot(join1, aes(x= Park.Code, fill= Park.Code)) + geom_bar(aes(y= RecreationVisits), stat= "summary", fun.y = "mean") + ggtitle("Average Number of Visitors per Park (2015-2017)") + theme(legend.position = "none") + xlab("National Park (code name)") + theme(axis.text.x= element_text(angle = 90))
+
+
+```
+This was another point of interest for me. I was very curious as to which parks were the most popular to visit. I sadly am missing a lot of the more popular ("well-known") parks in my data set due to the loss during the join, like the Grand Canyon, Great Smoky Mountains, Yellowstone, etc. But of these, it was interesting to see that the Dry Tortugas National Park was the most frequently visited on average over the years 2015-2017. 
+```{R}
+#Dimensionality Reduction!
+library(cluster)
+#install.packages("plotly")
+library(plotly)
+#install.packages("GGally")
+library(GGally)
+pam2 <- join1 %>% select(-State, - Latitude, -Longitude, -Region, -ParkType, -Park.Code, -Month, -Park.Name) %>% pam(3)
+sil_width <- vector()
+for(i in 2:10){
+  pam_fit <- join1 %>% select(-State, - Latitude, -Longitude, -Region, -ParkType, -Park.Code, -Month, -Park.Name) %>% pam(i)
+  sil_width[i] <-pam_fit$silinfo$avg.width
+}
+
+ggplot() + geom_line(aes(x=1:10, y= sil_width)) + scale_x_continuous(name = "k", breaks = 1:10)
+
+pamfinal <- join1 %>% mutate(cluster = as.factor(pam2$clustering))
+
+parkdata <-pamfinal %>% group_by(State, Region, ParkType, Park.Code, Month, Park.Name) %>% count(cluster) %>% arrange(desc(n)) %>% pivot_wider(names_from = "cluster", values_from = "n", values_fill = list('n' = 0))
+parkdata
+ggplot(pamfinal, aes(x=Acres, y= TotalVisitors, color = cluster)) + geom_point() + ggtitle("Park Acreage vs. Total Number of Visitors")
+plot(pam2, which = 2)
+ggpairs(pamfinal, columns = 5:12, aes(color=cluster))
+```
+
+The average silhouette width for the data I worked with was .79 when examined under the plot of pam(x=., k=3). The value of .79 indicates that a strong structure has been found, which does not seem to line up to my other results. Also, none of the graph showed up on the silhouette plot, which I'm unsure if that was because of my version of R on my computer or a complication with my code. (#Ran out of time to figure this out this morning#). I chose to go with 3 because that is where my plot began to descend. 
+  There did not appear to be any strong correlations with any of my numeric variables. There was a small correlation between Recreation Visitors and Tent Campers, which would make sense, if a park has more overall visitors there would probably be more campers coming to the park as well. This is most likely the case during the summer season when the weather is good.
+
+
+
+
+
+
