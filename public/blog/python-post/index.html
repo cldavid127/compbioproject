@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Casey David" />
     <meta name="description" content="Describe your website">
-    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
     <title>Python Post </title>
     <meta name="generator" content="Hugo 0.70.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
     
@@ -29,7 +29,7 @@
       <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -40,11 +40,11 @@
       <ul class="nav navbar-nav navbar-right">
       
         
-        <li><a href="../../blog/">BLOG</a></li>
+        <li><a href="/blog/">BLOG</a></li>
         
-        <li><a href="../../projects/">PROJECTS</a></li>
+        <li><a href="/projects/">PROJECTS</a></li>
         
-        <li><a href="../../resume2020.pdf">RESUME</a></li>
+        <li><a href="/resume2020.pdf">RESUME</a></li>
         
       
       </ul>
@@ -56,7 +56,7 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="../../blog/python-post/">Python Post </a></strong>
+            <strong><a href="/blog/python-post/">Python Post </a></strong>
           </h3>
         </div>
         <div class="blog-title">
@@ -72,7 +72,33 @@
               
 
 
+<p>I really enjoyed getting to better develop my skills in R this semester. It was also interesting getting to learn a little bit of the Python language. I was pleasantly surprised to learn that R and python can interact and both be used together in RStudio. Below are some examples of python code, and really simple instances of R and python interacting.</p>
+<pre class="r"><code>library(reticulate)
+Sys.setenv(RETICULATE_PYTHON = &quot;/usr/bin/python/&quot;)
+use_python(&quot;usr/bin/python&quot;)</code></pre>
+<pre class="r"><code>#install.packages(&quot;reticulate&quot;)
+library(reticulate)</code></pre>
+<pre class="python"><code>#this is a python code chunk
+me_dict = {
+&#39;firstName&#39;: &#39;Casey&#39;,
+&#39;lastName&#39;: &#39;David&#39;,
+&#39;hobbies&#39;: [&#39;playlist making&#39;, &#39;road trips&#39;, &#39;hiking&#39;, &#39;running&#39;],
+&#39;age&#39; : 22
+}
 
+print(me_dict)</code></pre>
+<pre><code>## {&#39;lastName&#39;: &#39;David&#39;, &#39;age&#39;: 22, &#39;firstName&#39;: &#39;Casey&#39;, &#39;hobbies&#39;: [&#39;playlist making&#39;, &#39;road trips&#39;, &#39;hiking&#39;, &#39;running&#39;]}</code></pre>
+<p>This example was me creating a dictionary entry for myself with some information about myself.</p>
+<pre class="r"><code>#this is an R code chunk
+#install.packages(&quot;reticulate&quot;)
+library(reticulate)
+
+rough &lt;- &quot;This was a really interesting class.&quot;</code></pre>
+<p>My original intention was to cross these two (the above code and the below code), but was unable to get anything to work with reticulate. So I included the ‘rough’ variable in the python code down below and printed them out together.</p>
+<pre class="python"><code>rough = &quot;This was a really interesting class.&quot;
+time =&quot;I learned a lot and got to work on my patience with technology.&quot;
+print(rough, time)</code></pre>
+<pre><code>## (&#39;This was a really interesting class.&#39;, &#39;I learned a lot and got to work on my patience with technology.&#39;)</code></pre>
 
               <hr>
               <div class="related-posts">
@@ -121,10 +147,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="../../js/docs.min.js"></script>
-<script src="../../js/main.js"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
 
-<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
 
 
     

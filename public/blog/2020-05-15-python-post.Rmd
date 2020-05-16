@@ -7,3 +7,40 @@ categories: []
 tags: []
 description: ''
 ---
+I really enjoyed getting to better develop my skills in R this semester. It was also interesting getting to learn a little bit of the Python language. I was pleasantly surprised to learn that R and python can interact and both be used together in RStudio. Below are some examples of python code, and really simple instances of R and python interacting.
+```{R}
+library(reticulate)
+Sys.setenv(RETICULATE_PYTHON = "/usr/bin/python/")
+use_python("usr/bin/python")
+```
+
+```{R}
+#install.packages("reticulate")
+library(reticulate)
+```
+
+```{python}
+#this is a python code chunk
+me_dict = {
+'firstName': 'Casey',
+'lastName': 'David',
+'hobbies': ['playlist making', 'road trips', 'hiking', 'running'],
+'age' : 22
+}
+
+print(me_dict)
+```
+This example was me creating a dictionary entry for myself with some information about myself. 
+```{R}
+#this is an R code chunk
+#install.packages("reticulate")
+library(reticulate)
+
+rough <- "This was a really interesting class."
+```
+My original intention was to cross these two (the above code and the below code), but was unable to get anything to work with reticulate. So I included the 'rough' variable in the python code down below and printed them out together. 
+```{python}
+rough = "This was a really interesting class."
+time ="I learned a lot and got to work on my patience with technology."
+print(rough, time)
+```

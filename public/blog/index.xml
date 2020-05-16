@@ -17,7 +17,8 @@
       <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/blog/python-post/</guid>
-      <description></description>
+      <description>I really enjoyed getting to better develop my skills in R this semester. It was also interesting getting to learn a little bit of the Python language. I was pleasantly surprised to learn that R and python can interact and both be used together in RStudio. Below are some examples of python code, and really simple instances of R and python interacting.
+library(reticulate) Sys.setenv(RETICULATE_PYTHON = &amp;quot;/usr/bin/python/&amp;quot;) use_python(&amp;quot;usr/bin/python&amp;quot;) #install.packages(&amp;quot;reticulate&amp;quot;) library(reticulate) #this is a python code chunk me_dict = { &amp;#39;firstName&amp;#39;: &amp;#39;Casey&amp;#39;, &amp;#39;lastName&amp;#39;: &amp;#39;David&amp;#39;, &amp;#39;hobbies&amp;#39;: [&amp;#39;playlist making&amp;#39;, &amp;#39;road trips&amp;#39;, &amp;#39;hiking&amp;#39;, &amp;#39;running&amp;#39;], &amp;#39;age&amp;#39; : 22 } print(me_dict) ## {&amp;#39;lastName&amp;#39;: &amp;#39;David&amp;#39;, &amp;#39;age&amp;#39;: 22, &amp;#39;firstName&amp;#39;: &amp;#39;Casey&amp;#39;, &amp;#39;hobbies&amp;#39;: [&amp;#39;playlist making&amp;#39;, &amp;#39;road trips&amp;#39;, &amp;#39;hiking&amp;#39;, &amp;#39;running&amp;#39;]} This example was me creating a dictionary entry for myself with some information about myself.</description>
     </item>
     
   </channel>

@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Casey David" />
     <meta name="description" content="Describe your website">
-    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
     <title>Project 2 -- SDS 348</title>
     <meta name="generator" content="Hugo 0.70.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
     
@@ -29,7 +29,7 @@
       <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="../"><i class="fa fa-home"></i></a>
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -40,11 +40,11 @@
       <ul class="nav navbar-nav navbar-right">
       
         
-        <li><a href="../blog/">BLOG</a></li>
+        <li><a href="/blog/">BLOG</a></li>
         
-        <li><a href="../projects/">PROJECTS</a></li>
+        <li><a href="/projects/">PROJECTS</a></li>
         
-        <li><a href="../resume2020.pdf">RESUME</a></li>
+        <li><a href="/resume2020.pdf">RESUME</a></li>
         
       
       </ul>
@@ -56,7 +56,7 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="../project2/">Project 2 -- SDS 348</a></strong>
+            <strong><a href="/project2/">Project 2 -- SDS 348</a></strong>
           </h3>
         </div>
         <div class="blog-title">
@@ -334,15 +334,15 @@ data = baseball)
 ## Multiple R-squared: 0.345, Adjusted R-squared: 0.3247
 ## F-statistic: 17.01 on 7 and 226 DF, p-value: &lt; 2.2e-16</code></pre>
 <pre class="r"><code>ggplot(baseball, aes(x= hits, y=homer86, group=league86)) + geom_point(aes(color=league86)) + geom_smooth(method = &quot;lm&quot;, formula = y~1, se=F, fullrange=T, aes(color=league86))</code></pre>
-<p><img src="../project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>resids &lt;-lm(homer86_c~ hits_c * league86 * atbat86_c, data = baseball)$residuals
 fitted &lt;-lm(homer86_c~ hits_c * league86 * atbat86_c, data = baseball)$fitted.values
 ggplot()+geom_point(aes(resids, fitted))</code></pre>
-<p><img src="../project2_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>ggplot()+geom_histogram(aes(resids), bins = 20)</code></pre>
-<p><img src="../project2_files/figure-html/unnamed-chunk-5-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-3.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>ggplot()+geom_point(aes(fitted,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
-<p><img src="../project2_files/figure-html/unnamed-chunk-5-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-4.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>ks.test(resids, &quot;pnorm&quot;, mean= 0, sd(resids))</code></pre>
 <pre><code>## 
 ##  One-sample Kolmogorov-Smirnov test
@@ -460,11 +460,11 @@ table(prediction= pred, truth =basedata$division)%&gt;% addmargins</code></pre>
 <pre class="r"><code>basedata$logit&lt;-predict(fit2) 
 ggplot(basedata,aes(logit, fill=div86))+geom_density(alpha=.3)+
   geom_vline(xintercept=0,lty=2)</code></pre>
-<p><img src="../project2_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/project2_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>library(plotROC)
 ROCplot &lt;- ggplot(basedata)+ geom_roc(aes(d= division, m=prob), n.cuts = 0) 
 ROCplot</code></pre>
-<p><img src="../project2_files/figure-html/unnamed-chunk-7-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="/project2_files/figure-html/unnamed-chunk-7-2.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>calc_auc(ROCplot)</code></pre>
 <pre><code>##   PANEL group       AUC
 ## 1     1    -1 0.6062865</code></pre>
@@ -645,10 +645,10 @@ summarize_all(diags, mean)</code></pre>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="../js/docs.min.js"></script>
-<script src="../js/main.js"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
 
-<script src="../js/ie10-viewport-bug-workaround.js"></script>
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
 
 
     

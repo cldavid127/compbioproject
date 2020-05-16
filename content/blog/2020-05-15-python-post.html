@@ -10,4 +10,30 @@ description: ''
 
 
 
+<p>I really enjoyed getting to better develop my skills in R this semester. It was also interesting getting to learn a little bit of the Python language. I was pleasantly surprised to learn that R and python can interact and both be used together in RStudio. Below are some examples of python code, and really simple instances of R and python interacting.</p>
+<pre class="r"><code>library(reticulate)
+Sys.setenv(RETICULATE_PYTHON = &quot;/usr/bin/python/&quot;)
+use_python(&quot;usr/bin/python&quot;)</code></pre>
+<pre class="r"><code>#install.packages(&quot;reticulate&quot;)
+library(reticulate)</code></pre>
+<pre class="python"><code>#this is a python code chunk
+me_dict = {
+&#39;firstName&#39;: &#39;Casey&#39;,
+&#39;lastName&#39;: &#39;David&#39;,
+&#39;hobbies&#39;: [&#39;playlist making&#39;, &#39;road trips&#39;, &#39;hiking&#39;, &#39;running&#39;],
+&#39;age&#39; : 22
+}
 
+print(me_dict)</code></pre>
+<pre><code>## {&#39;lastName&#39;: &#39;David&#39;, &#39;age&#39;: 22, &#39;firstName&#39;: &#39;Casey&#39;, &#39;hobbies&#39;: [&#39;playlist making&#39;, &#39;road trips&#39;, &#39;hiking&#39;, &#39;running&#39;]}</code></pre>
+<p>This example was me creating a dictionary entry for myself with some information about myself.</p>
+<pre class="r"><code>#this is an R code chunk
+#install.packages(&quot;reticulate&quot;)
+library(reticulate)
+
+rough &lt;- &quot;This was a really interesting class.&quot;</code></pre>
+<p>My original intention was to cross these two (the above code and the below code), but was unable to get anything to work with reticulate. So I included the ‘rough’ variable in the python code down below and printed them out together.</p>
+<pre class="python"><code>rough = &quot;This was a really interesting class.&quot;
+time =&quot;I learned a lot and got to work on my patience with technology.&quot;
+print(rough, time)</code></pre>
+<pre><code>## (&#39;This was a really interesting class.&#39;, &#39;I learned a lot and got to work on my patience with technology.&#39;)</code></pre>
